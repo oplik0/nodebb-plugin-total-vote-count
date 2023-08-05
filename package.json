@@ -27,7 +27,7 @@
 	},
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/nodebb/nodebb-plugin-total-vote-count/issues"
+		"url": "https://github.com/oplik0/nodebb-plugin-total-vote-count/issues"
 	},
 	"readmeFilename": "README.md",
 	"nbbpm": {
