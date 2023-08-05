@@ -62,6 +62,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: tested-plugin
+      - run: cp install/package.json package.json
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -69,7 +70,6 @@ jobs:
       - name: Get plugin name
         id: pluginName
         run: echo "NAME=$(node -e "console.log(require('./tested-plugin/package.json').name)")" >> "$GITHUB_OUTPUT"
-      - run: cp install/package.json package.json
       - name: Install dependencies
         run: npm install
       - name: Install tested plugin
