@@ -41,14 +41,14 @@ describe('nodebb-plugin-total-vote-count', () => {
 			}),
 		]);
 		({ postData, topicData } = await topics.post({
-			uid: commenterUid,
+			uid: authorUid,
 			cid: cid,
 			title: 'Test Total Vote Count Topic Title',
 			content: 'The content of test topic',
 		}));
 
 		responseData = await topics.reply({
-			uid: authorUid,
+			uid: commenterUid,
 			tid: topicData.tid,
 			content: 'The content of test reply',
 		});
@@ -93,8 +93,8 @@ describe('nodebb-plugin-total-vote-count', () => {
 	});
 
 	it('should allow post and response votes to cancel out', async () => {
-		posts.upvote(postData.pid, commenterUid);
-		posts.downvote(responseData.pid, authorUid);
+		await posts.upvote(postData.pid, commenterUid);
+		await posts.downvote(responseData.pid, authorUid);
 		const [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 0);
 	});
