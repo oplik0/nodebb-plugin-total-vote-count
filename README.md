@@ -1,3 +1,5 @@
+[![Tests](https://github.com/oplik0/nodebb-plugin-total-vote-count/actions/workflows/test.yml/badge.svg)](https://github.com/oplik0/nodebb-plugin-total-vote-count/actions/workflows/test.yml)
+
 # Total Vote Count Plugin for NodeBB
 
 By default, the topic list in NodeBB shows how many votes the initial topic got.
