@@ -164,6 +164,7 @@ jobs:
         run: jq '.test_plugins = ["${{ steps.pluginName.outputs.NAME }}"]' config.json > config.json.tmp && mv config.json.tmp config.json
       - name: Run ESLint
         if: matrix.lint
+        working-directory: tested-plugin
         run: npm run lint
       - name: Run tests
         run: npm test test/plugins-installed.js
