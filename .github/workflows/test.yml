@@ -72,7 +72,7 @@ jobs:
         working-directory: tested-plugin
         run: |
           yarn
-          yarn lint--config $GITHUB_WORKSPACE/tested-plugin/.eslintrc --no-eslintrc
+          yarn lint --config $GITHUB_WORKSPACE/tested-plugin/.eslintrc --no-eslintrc
       - name: Get npm cache directory
         id: npm-cache-dir
         shell: bash
