@@ -5,7 +5,7 @@
 	"main": "library.js",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/nodebb/nodebb-plugin-total-vote-count"
+		"url": "https://github.com/oplik0/nodebb-plugin-total-vote-count"
 	},
 	"keywords": [
 		"nodebb",
@@ -36,7 +36,7 @@
 	"devDependencies": {
 		"@commitlint/cli": "17.6.7",
 		"@commitlint/config-angular": "17.6.7",
-		"eslint": "8.x",
+		"eslint": "8.46.0",
 		"eslint-config-nodebb": "0.2.1",
 		"eslint-plugin-import": "2.x",
 		"husky": "8.0.3",
