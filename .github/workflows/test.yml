@@ -1,0 +1,159 @@
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+name: Test
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [16, 18] # versions currently supported by NodeBB
+        database: [mongo] # you can add redis and postgres here if you're touching the database more directly
+        nodebb: [master, v3.x] # branches or tags
+        include:
+          - os: ubuntu-latest
+            node: 18
+            database: mongo
+            nodebb: master
+            lint: true # we only want to lint once
+    services:
+      postgres:
+        image: 'postgres:15-alpine'
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 5432 on service container to the host
+          - 5432:5432
+
+      redis:
+        image: 'redis:7.0.11'
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+      mongo:
+        image: 'mongo:3.7'
+        ports:
+          # Maps port 27017 on service container to the host
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: NodeBB/NodeBB
+          ref: ${{ matrix.nodebb }}
+      - uses: actions/checkout@v3
+        with:
+          path: tested-plugin
+      - run: cp install/package.json package.json
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - run: npm install --save ./tested-plugin
+      - name: Setup on MongoDB
+        if: startsWith(matrix.database, 'mongo')
+        env:
+          SETUP: >-
+            {
+              "url": "http://127.0.0.1:4567",
+              "secret": "abcdef",
+              "admin:username": "admin",
+              "admin:email": "test@example.org",
+              "admin:password": "hAN3Eg8W",
+              "admin:password:confirm": "hAN3Eg8W",
+
+              "database": "mongo",
+              "mongo:host": "127.0.0.1",
+              "mongo:port": 27017,
+              "mongo:username": "",
+              "mongo:password": "",
+              "mongo:database": "nodebb"
+            }
+          CI: >-
+            {
+              "host": "127.0.0.1",
+              "port": 27017,
+              "database": "ci_test"
+            }
+        run: |
+          node app --setup="${SETUP}" --ci="${CI}"
+      - name: Setup on PostgreSQL
+        if: startsWith(matrix.database, 'postgres')
+        env:
+          SETUP: >-
+            {
+              "url": "http://127.0.0.1:4567",
+              "secret": "abcdef",
+              "admin:username": "admin",
+              "admin:email": "test@example.org",
+              "admin:password": "hAN3Eg8W",
+              "admin:password:confirm": "hAN3Eg8W",
+
+              "database": "postgres",
+              "postgres:host": "127.0.0.1",
+              "postgres:port": 5432,
+              "postgres:username": "postgres",
+              "postgres:password": "postgres",
+              "postgres:database": "nodebb"
+            }
+          CI: >-
+            {
+              "host": "127.0.0.1",
+              "database": "ci_test",
+              "port": 5432,
+              "username": "postgres",
+              "password": "postgres"
+            }
+        run: |
+          node -e "const { Client } = require('pg'); const c = new Client({ host: '127.0.0.1', port: 5432, user: 'postgres', password: 'postgres' }); c.connect().then(() => c.query('CREATE DATABASE nodebb')).then(() => c.query('CREATE DATABASE ci_test')).then(() => c.end())"
+          node app --setup="${SETUP}" --ci="${CI}"
+
+      - name: Setup on Redis
+        if: startsWith(matrix.database, 'redis')
+        env:
+          SETUP: >-
+            {
+              "url": "http://127.0.0.1:4567/forum",
+              "secret": "abcdef",
+              "admin:username": "admin",
+              "admin:email": "test@example.org",
+              "admin:password": "hAN3Eg8W",
+              "admin:password:confirm": "hAN3Eg8W",
+
+              "database": "redis",
+              "redis:host": "127.0.0.1",
+              "redis:port": 6379,
+              "redis:password": "",
+              "redis:database": 0
+            }
+          CI: >-
+            {
+              "host": "127.0.0.1",
+              "database": 1,
+              "port": 6379
+            }
+        run: |
+          node app --setup="${SETUP}" --ci="${CI}"
+      - name: Run ESLint
+        if: matrix.lint
+        run: npm run lint
+      - name: Run tests
+        run: npx mocha test/plugins-installed.js
