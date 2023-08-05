@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.1.0...v1.2.0) (2023-08-05)
+
+
+### Features
+
+* error handling ([d93e30a](https://github.com/oplik0/nodebb-plugin-total-vote-count/commit/d93e30abccedf9a0f84a18d945025d5acb086235))
+
 ## [1.1.0](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.0.0...v1.1.0) (2023-08-05)
 
 
