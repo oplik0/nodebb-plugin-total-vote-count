@@ -32,7 +32,7 @@ describe('nodebb-plugin-total-vote-count', () => {
 	let responseData;
 	let cid;
 	before(async () => {
-		[authorUid, commenterUid, cid] = await Promise.all([
+		[authorUid, commenterUid, { cid }] = await Promise.all([
 			async () => user.create({ username: 'totalVotesAuthor' }),
 			async () => user.create({ username: 'totalVotesCommenter' }),
 			async () => categories.create({
