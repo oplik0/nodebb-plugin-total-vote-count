@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: oplik0/NodeBB
+          repository: NodeBB/NodeBB
           ref: ${{ matrix.nodebb }}
       - uses: actions/checkout@v3
         with:
@@ -160,7 +160,7 @@ jobs:
             }
         run: |
           node app --setup="${SETUP}" --ci="${CI}"
-      - name: Add plugin config
+      - name: Add tested plugin to config
         run: jq '.test_plugins = ["${{ steps.pluginName.outputs.NAME }}"]' config.json > config.json.tmp && mv config.json.tmp config.json
       - name: Run ESLint
         if: matrix.lint
