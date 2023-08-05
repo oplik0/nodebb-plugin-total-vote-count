@@ -1,17 +1,14 @@
-# Quickstart Plugin for NodeBB
+# Total Vote Count Plugin for NodeBB
 
-A starter kit for quickly creating NodeBB plugins. Comes with a pre-setup LESS file, server side JS script with an `action:app.load` hook, and a client-side script. Most plugins need at least one of the above, so this ought to save you some time. For a full list of hooks have a look at our [wiki page](https://github.com/NodeBB/NodeBB/wiki/Hooks), and for more information about creating plugins please visit our [documentation portal](https://docs.nodebb.org/).
+By default, the topic list in NodeBB shows how many votes the initial topic got.
+This plugin modifies this behaviour so that the counter shows the total of all posts in a topic.
 
-Fork this or copy it, and using your favourite text editor find and replace all instances of `nodebb-plugin-quickstart` with `nodebb-plugin-your-plugins-name`. Change the author's name in the LICENSE and package.json files.
-
-## Hello World
-
-Really simple, just edit `static/lib/main.js` and paste in `console.log('hello world');`, and that's it!
+This is heavily based on code @barisusakli published on [NodeBB Community Forum](https://community.nodebb.org/topic/17179/total-vote-count-on-topic-list/3) - just slightly modified and packaged into a plugin
 
 ## Installation
 
-    npm install nodebb-plugin-quickstart
+Just install via ACP plugins page, or manually using `npm` (or any other compatible package manager)
 
-## Screenshots
-
-Don't forget to add screenshots!
+```bash
+npm install nodebb-plugin-total-vote-count
+```
