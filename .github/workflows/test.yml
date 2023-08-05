@@ -156,7 +156,7 @@ jobs:
         run: npm install --save ./tested-plugin
       - name: Activate tested plugin
         run: |
-          ./nodebb activate ${node -e "console.log(require('./tested-plugin/package.json').name)"}
+          ./nodebb activate $(node -e "console.log(require('./tested-plugin/package.json').name)")
       - name: Run ESLint
         if: matrix.lint
         run: npm run lint
