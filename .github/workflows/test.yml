@@ -63,6 +63,7 @@ jobs:
         if: matrix.lint
         working-directory: tested-plugin
         run: |
+          cd $GITHUB_WORKSPACE/tested-plugin
           yarn --cwd $GITHUB_WORKSPACE/tested-plugin
           yarn --cwd $GITHUB_WORKSPACE/tested-plugin eslint $GITHUB_WORKSPACE/tested-plugin
       - name: Get npm cache directory
