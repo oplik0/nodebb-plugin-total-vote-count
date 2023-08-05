@@ -54,14 +54,14 @@ jobs:
           ref: ${{ matrix.nodebb }}
       - uses: actions/checkout@v3
         with:
-          path: tested-plugin
+          path: ~/tested-plugin
       - run: cp install/package.json package.json
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
       - name: Run ESLint
         if: matrix.lint
-        working-directory: tested-plugin
+        working-directory: ~/tested-plugin
         run: |
           npm install
           npm run lint
@@ -78,11 +78,11 @@ jobs:
             ${{ runner.os }}-node-
       - name: Get plugin name
         id: pluginName
-        run: echo "NAME=$(node -e "console.log(require('./tested-plugin/package.json').name)")" >> "$GITHUB_OUTPUT"
+        run: echo "NAME=$(node -e "console.log(require('~/tested-plugin/package.json').name)")" >> "$GITHUB_OUTPUT"
       - name: Install dependencies
         run: npm install
       - name: Install tested plugin
-        run: npm install --save ./tested-plugin
+        run: npm install --save ~/tested-plugin
       - name: Setup on MongoDB
         if: startsWith(matrix.database, 'mongo')
         env:
