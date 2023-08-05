@@ -32,7 +32,7 @@ describe('nodebb-plugin-total-vote-count', () => {
 	let responseData;
 	let cid;
 	before(async () => {
-		[authorUid, commenterUid, cid] = Promise.all([
+		[authorUid, commenterUid, cid] = await Promise.all([
 			async () => user.create({ username: 'totalVotesAuthor' }),
 			async () => user.create({ username: 'totalVotesCommenter' }),
 			async () => categories.create({
@@ -65,29 +65,29 @@ describe('nodebb-plugin-total-vote-count', () => {
 	});
 
 	it('should equal initial post votes if no other posts are upvoted', async () => {
-		posts.upvote(postData.pid, commenterUid);
+		await posts.upvote(postData.pid, commenterUid);
 		let [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 1);
 
-		posts.downvote(postData.pid, commenterUid);
+		await posts.downvote(postData.pid, commenterUid);
 		[topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, -1);
-		posts.unvote(postData.pid, commenterUid);
+		await posts.unvote(postData.pid, commenterUid);
 	});
 
 	it('should consider response votes', async () => {
-		posts.upvote(responseData.pid, authorUid);
+		await posts.upvote(responseData.pid, authorUid);
 		let [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 1);
 
-		posts.downvote(responseData.pid, authorUid);
+		await posts.downvote(responseData.pid, authorUid);
 		[topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, -1);
 	});
 
 	it('should consider both post and response votes', async () => {
-		posts.upvote(postData.pid, commenterUid);
-		posts.upvote(responseData.pid, authorUid);
+		await posts.upvote(postData.pid, commenterUid);
+		await posts.upvote(responseData.pid, authorUid);
 		const [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 2);
 	});
