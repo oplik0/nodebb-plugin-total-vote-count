@@ -59,6 +59,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+      - name: Run ESLint
+        if: matrix.lint
+        working-directory: tested-plugin
+        run: |
+          npm install
+          npm run lint
       - name: Get npm cache directory
         id: npm-cache-dir
         shell: bash
@@ -162,9 +168,5 @@ jobs:
           node app --setup="${SETUP}" --ci="${CI}"
       - name: Add tested plugin to config
         run: jq '.test_plugins = ["${{ steps.pluginName.outputs.NAME }}"]' config.json > config.json.tmp && mv config.json.tmp config.json
-      - name: Run ESLint
-        if: matrix.lint
-        working-directory: tested-plugin
-        run: npm run lint
       - name: Run tests
         run: npm test test/plugins-installed.js
