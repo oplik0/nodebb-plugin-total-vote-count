@@ -24,7 +24,7 @@ jobs:
             lint: true # we only want to lint once
     services:
       postgres:
-        image: "${{ startsWith(matrix.database, 'postgres') && 'postgres:15-alpine' || '' }} "
+        image: ${{ startsWith(matrix.database, 'postgres') && 'postgres:15-alpine' || '' }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -39,7 +39,7 @@ jobs:
           - 5432:5432
 
       redis:
-        image: "${{ startsWith(matrix.database, 'redis') && 'redis:7.0.11' || '' }}" 
+        image: ${{ startsWith(matrix.database, 'redis') && 'redis:7.0.11' || '' }}
         # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
@@ -51,7 +51,7 @@ jobs:
           - 6379:6379
 
       mongo:
-        image: "${{ startsWith(matrix.database, 'mongo') && 'mongo:3.7' || ''}}" 
+        image: ${{ startsWith(matrix.database, 'mongo') && 'mongo:3.7' || ''}}
         ports:
           # Maps port 27017 on service container to the host
           - 27017:27017
