@@ -62,12 +62,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: tested-plugin
-      - run: cp install/package.json package.json
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+          cache: 'npm'
+      - name: Get plugin name
+        id: pluginName
+        run: echo "NAME=$(node -e "console.log(require('./tested-plugin/package.json').name)")" >> "$GITHUB_OUTPUT"
+      - run: cp install/package.json package.json
       - name: Install dependencies
         run: npm install
+      - name: Install tested plugin
+        run: npm install --save ./tested-plugin
       - name: Setup on MongoDB
         if: startsWith(matrix.database, 'mongo')
         env:
@@ -85,7 +91,10 @@ jobs:
               "mongo:port": 27017,
               "mongo:username": "",
               "mongo:password": "",
-              "mongo:database": "nodebb"
+              "mongo:database": "nodebb",
+              "test_plugins": [
+               "${{ steps.pluginName.outputs.NAME }}"
+              ]
             }
           CI: >-
             {
@@ -112,7 +121,10 @@ jobs:
               "postgres:port": 5432,
               "postgres:username": "postgres",
               "postgres:password": "postgres",
-              "postgres:database": "nodebb"
+              "postgres:database": "nodebb",
+              "test_plugins": [
+               "${{ steps.pluginName.outputs.NAME }}"
+              ]
             }
           CI: >-
             {
@@ -142,7 +154,10 @@ jobs:
               "redis:host": "127.0.0.1",
               "redis:port": 6379,
               "redis:password": "",
-              "redis:database": 0
+              "redis:database": 0,
+              "test_plugins": [
+               "${{ steps.pluginName.outputs.NAME }}"
+              ]
             }
           CI: >-
             {
@@ -152,11 +167,6 @@ jobs:
             }
         run: |
           node app --setup="${SETUP}" --ci="${CI}"
-      - name: Install tested plugin
-        run: npm install --save ./tested-plugin
-      - name: Activate tested plugin
-        run: |
-          ./nodebb activate $(node -e "console.log(require('./tested-plugin/package.json').name)")
       - name: Run ESLint
         if: matrix.lint
         run: npm run lint
