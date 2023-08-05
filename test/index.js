@@ -9,33 +9,93 @@
  *
  * {
  *     "test_plugins": [
- *         "nodebb-plugin-quickstart"
+ *         "nodebb-plugin-total-vote-count"
  *     ]
  * }
  */
 
 'use strict';
 
-/* globals describe, it, before */
-
 const assert = require('assert');
 
 const db = require.main.require('./test/mocks/databasemock');
+const topics = require.main.require('./src/topics');
+const posts = require.main.require('./src/posts');
+const categories = require.main.require('./src/categories');
+const user = require.main.require('./src/user');
 
-describe('nodebb-plugin-quickstart', () => {
-	before(() => {
-		// Prepare for tests here
+describe('nodebb-plugin-total-vote-count', () => {
+	let authorUid;
+	let commenterUid;
+	let postData;
+	let topicData;
+	let responseData;
+	let cid;
+	before(async (done) => {
+		[authorUid, commenterUid, cid] = Promise.all([
+			async () => user.create({ username: 'totalVotesAuthor' }),
+			async () => user.create({ username: 'totalVotesCommenter' }),
+			async () => categories.create({
+				name: 'Test Category',
+				description: 'Test category created by testing script',
+			}),
+		]);
+		({ postData, topicData } = await topics.post({
+			uid: commenterUid,
+			cid: cid,
+			title: 'Test Total Vote Count Topic Title',
+			content: 'The content of test topic',
+		}));
+
+		responseData = await topics.reply({
+			uid: authorUid,
+			tid: topicData.tid,
+			content: 'The content of test reply',
+		});
 	});
 
-	it('should pass', (done) => {
-		const actual = 'value';
-		const expected = 'value';
-		assert.strictEqual(actual, expected);
-		done();
+	afterEach(async () => {
+		await posts.unvote(postData.pid, commenterUid);
+		await posts.unvote(responseData.pid, authorUid);
 	});
 
-	it('should load config object', async () => {	// Tests can be async functions too
-		const config = await db.getObject('config');
-		assert(config);
+	it('should start with 0 votes', async () => {
+		const [topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, 0);
+	});
+
+	it('should equal initial post votes if no other posts are upvoted', async () => {
+		posts.upvote(postData.pid, commenterUid);
+		let [topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, 1);
+
+		posts.downvote(postData.pid, commenterUid);
+		[topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, -1);
+		posts.unvote(postData.pid, commenterUid);
+	});
+
+	it('should consider response votes', async () => {
+		posts.upvote(responseData.pid, authorUid);
+		let [topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, 1);
+
+		posts.downvote(responseData.pid, authorUid);
+		[topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, -1);
+	});
+
+	it('should consider both post and response votes', async () => {
+		posts.upvote(postData.pid, commenterUid);
+		posts.upvote(responseData.pid, authorUid);
+		const [topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, 2);
+	});
+
+	it('should allow post and response votes to cancel out', async () => {
+		posts.upvote(postData.pid, commenterUid);
+		posts.downvote(responseData.pid, authorUid);
+		const [topic] = await topics.getTopicsByTids([topicData.tid]);
+		assert.strictEqual(topic.votes, 0);
 	});
 });
