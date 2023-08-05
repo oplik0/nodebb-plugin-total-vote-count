@@ -66,7 +66,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-          cache: 'npm'
       - name: Get plugin name
         id: pluginName
         run: echo "NAME=$(node -e "console.log(require('./tested-plugin/package.json').name)")" >> "$GITHUB_OUTPUT"
