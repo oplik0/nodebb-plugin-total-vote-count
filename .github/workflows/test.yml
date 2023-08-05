@@ -9,7 +9,7 @@ name: Test
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    name: "Test NodeBB ${{ matrix.nodebb }} on Node.js ${{ matrix.node }} with ${{ matrix.database }} (lint: ${{ matrix.lint }})"
+    name: "Test Plugin on NodeBB ${{ matrix.nodebb }} (Node.js ${{ matrix.node }}, ${{ matrix.database }}${{ matrix.lint && ', linting enabled' }}"
     strategy:
       matrix:
         os: [ubuntu-latest]
