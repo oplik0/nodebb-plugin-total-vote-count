@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.2.0...v1.2.1) (2023-08-06)
+
+
+### Bug Fixes
+
+* add config to scripts ([a126109](https://github.com/oplik0/nodebb-plugin-total-vote-count/commit/a126109ad18e69d7bd63af93efbc8abc4758a4f8))
+* resolve lint issues ([e1a186b](https://github.com/oplik0/nodebb-plugin-total-vote-count/commit/e1a186b1d6e49f30e742af0601c25be417324c76))
+
 ## [1.2.0](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.1.0...v1.2.0) (2023-08-05)
 
 
