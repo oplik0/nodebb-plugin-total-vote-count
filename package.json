@@ -24,8 +24,8 @@
 		"email": "opliko.reg@protonmail.com"
 	},
 	"scripts": {
-		"lint": "eslint . --ext .js",
-		"lint:fix": "eslint . --ext .js --fix"
+		"lint": "eslint . --ext .js --config .eslintrc",
+		"lint:fix": "eslint . --ext .js --fix --config .eslintrc"
 	},
 	"lint-staged": {
 		"*.js": [
