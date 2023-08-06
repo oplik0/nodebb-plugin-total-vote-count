@@ -16,9 +16,10 @@
 
 'use strict';
 
+/* globals describe, it, before, afterEach */
+
 const assert = require('assert');
 
-const db = require.main.require('./test/mocks/databasemock');
 const topics = require.main.require('./src/topics');
 const posts = require.main.require('./src/posts');
 const categories = require.main.require('./src/categories');
