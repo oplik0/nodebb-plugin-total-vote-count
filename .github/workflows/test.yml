@@ -64,7 +64,7 @@ jobs:
         with:
           path: tested-plugin
       - run: cp install/package.json package.json
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: Run ESLint
