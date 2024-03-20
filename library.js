@@ -32,13 +32,13 @@ plugin.updatePostVoteCount = async (hookData) => {
 	const topicData = await topics.getTopicFields(tid, ['cid', 'upvotes', 'downvotes', 'pinned']);
 	const voteData = await db.getSortedSetMembersWithScores(`tid:${tid}:posts:votes`);
 
-	let votes = topicData.votes;
+	let { votes } = topicData;
 	for (const { score } of voteData) {
 		votes += score;
 	}
 
 	const promises = [
-		db.sortedSetAdd('topics:votes', votes, tid)
+		db.sortedSetAdd('topics:votes', votes, tid),
 	];
 
 	if (!topicData.pinned) {
