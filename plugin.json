@@ -3,6 +3,7 @@
 	"url": "https://github.com/oplik0/nodebb-plugin-total-vote-count",
 	"library": "./library.js",
 	"hooks": [
-		{ "hook": "filter:topics.get", "method": "getTopics" }
+		{ "hook": "filter:topics.get", "method": "getTopics" },
+		{ "hook": "action:post.updatePostVoteCount", "method": "updatePostVoteCount" }
 	]
 }
