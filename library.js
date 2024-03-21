@@ -80,3 +80,5 @@ async function recalculateTotalTopicVotes(tids) {
 
 	return topicData.map(t => t.totalVoteCount);
 }
+
+

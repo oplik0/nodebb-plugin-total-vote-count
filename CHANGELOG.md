@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.2.1...v1.3.0) (2024-03-20)
+
+
+### Features
+
+* on vote calculate new order ([#19](https://github.com/oplik0/nodebb-plugin-total-vote-count/issues/19)) ([5553627](https://github.com/oplik0/nodebb-plugin-total-vote-count/commit/5553627685b7bc708f06e490157a39a3db9f19c1))
+
 ## [1.2.1](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.2.0...v1.2.1) (2023-08-06)
 
 
