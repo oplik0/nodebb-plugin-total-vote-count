@@ -4,6 +4,10 @@
 	"library": "./library.js",
 	"hooks": [
 		{ "hook": "filter:topics.get", "method": "getTopics" },
-		{ "hook": "action:post.updatePostVoteCount", "method": "updatePostVoteCount" }
+		{ "hook": "action:post.updatePostVoteCount", "method": "updatePostVoteCount" },
+		{ "hook": "action:post.move", "method": "actionPostMove" },
+		{ "hook": "action:post.delete", "method": "actionPostDelete" },
+		{ "hook": "action:post.restore", "method": "actionPostRestore" },
+		{ "hook": "action:posts.purge", "method": "actionPostsPurge" }
 	]
 }
