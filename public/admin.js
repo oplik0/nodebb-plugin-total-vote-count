@@ -1,11 +1,13 @@
 'use strict';
 
+/* globals define, $, socket */
+
 define('admin/plugins/total-vote-count', ['alerts'], function (alerts) {
 	const ACP = {};
 
 	ACP.init = function () {
 		$('#recalculate').on('click', () => {
-			socket.emit('admin.plugins.totalVotes.calculate', {}, function (err) {
+			socket.emit('admin.plugins.totalVotes.calculate', {}, (err) => {
 				if (err) {
 					return alerts.error(err);
 				}
@@ -14,7 +16,7 @@ define('admin/plugins/total-vote-count', ['alerts'], function (alerts) {
 		});
 
 		$('#revert').on('click', () => {
-			socket.emit('admin.plugins.totalVotes.revert', {}, function (err) {
+			socket.emit('admin.plugins.totalVotes.revert', {}, (err) => {
 				if (err) {
 					return alerts.error(err);
 				}
