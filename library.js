@@ -74,7 +74,7 @@ async function recalculateTotalTopicVotes(tids) {
 
 	for (const [index, topic] of Object.entries(topicData)) {
 		if (topic) {
-			topic.totalVoteCount = 0;
+			topic.totalVoteCount = topic.votes;
 			for (const { score } of voteData[index]) {
 				topic.totalVoteCount += score;
 			}
