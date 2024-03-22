@@ -3,11 +3,16 @@
 	"url": "https://github.com/oplik0/nodebb-plugin-total-vote-count",
 	"library": "./library.js",
 	"hooks": [
+		{ "hook": "static:app.load", "method": "init" },
+		{ "hook": "filter:admin.header.build", "method": "addAdminNavigation" },
 		{ "hook": "filter:topics.get", "method": "getTopics" },
 		{ "hook": "action:post.updatePostVoteCount", "method": "updatePostVoteCount" },
 		{ "hook": "action:post.move", "method": "actionPostMove" },
 		{ "hook": "action:post.delete", "method": "actionPostDelete" },
 		{ "hook": "action:post.restore", "method": "actionPostRestore" },
 		{ "hook": "action:posts.purge", "method": "actionPostsPurge" }
-	]
+	],
+	"modules": {
+		"../admin/plugins/total-vote-count.js": "./public/admin.js"
+	}
 }

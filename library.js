@@ -4,22 +4,35 @@ const _ = require.main.require('lodash');
 
 const db = require.main.require('./src/database');
 const topics = require.main.require('./src/topics');
+const batch = require.main.require('./src/batch');
+const socketAdmin = require.main.require('./src/socket.io/admin');
 
 const plugin = module.exports;
 
+plugin.init = async function (params) {
+	const { router } = params;
+	const routeHelpers = require.main.require('./src/routes/helpers');
+
+	routeHelpers.setupAdminPageRoute(router, '/admin/plugins/total-vote-count', [], (req, res) => {
+		res.render('admin/plugins/total-vote-count', {
+			title: 'Total Vote Count',
+		});
+	});
+};
+
+plugin.addAdminNavigation = async function (header) {
+	header.plugins.push({
+		route: '/plugins/total-vote-count',
+		icon: 'fa-book',
+		name: 'Total vote count',
+	});
+	return header;
+};
+
 plugin.getTopics = async (hookData) => {
-	const missingTids = hookData.topics
-		.filter(t => t && !t.hasOwnProperty('totalVoteCount'))
-		.map(t => t.tid);
-
-	const totalVotes = await recalculateTotalTopicVotes(missingTids);
-	const tidToTotalVotes = _.zipObject(missingTids, totalVotes);
-
 	hookData.topics.forEach((t) => {
-		if (t) {
-			t.votes = t.hasOwnProperty('totalVoteCount') ?
-				parseInt(t.totalVoteCount, 10) :
-				parseInt(tidToTotalVotes[t.tid], 10);
+		if (t && t.hasOwnProperty('totalVoteCount')) {
+			t.votes = parseInt(t.totalVoteCount, 10);
 		}
 	});
 
@@ -50,10 +63,10 @@ plugin.actionPostsPurge = async (hookData) => {
 
 async function recalculateTotalTopicVotes(tids) {
 	if (!tids.length) {
-		return [];
+		return;
 	}
 	const topicData = await topics.getTopicsFields(tids, [
-		'cid', 'upvotes', 'downvotes', 'pinned',
+		'tid', 'cid', 'upvotes', 'downvotes', 'pinned',
 	]);
 	const voteData = await db.getSortedSetsMembersWithScores(
 		tids.map(tid => `tid:${tid}:posts:votes`)
@@ -77,8 +90,40 @@ async function recalculateTotalTopicVotes(tids) {
 		promises.push(db.sortedSetAddBulk(nonPinned.map(t => ([`cid:${t.cid}:tids:votes`, t.totalVoteCount, t.tid]))));
 	}
 	await Promise.all(promises);
-
-	return topicData.map(t => t.totalVoteCount);
 }
 
+socketAdmin.plugins.totalVotes = Object.create(null);
+socketAdmin.plugins.totalVotes.calculate = async (/* socket */) => {
+	await batch.processSortedSet('topics:tid', recalculateTotalTopicVotes, {
+		batch: 500,
+	});
+};
+
+socketAdmin.plugins.totalVotes.revert = async (/* socket */) => {
+	await batch.processSortedSet('topics:tid', async (tids) => {
+		let topicData = await db.getObjectsFields(
+			tids.map(tid => `topic:${tid}`),
+			['tid', 'cid', 'upvotes', 'downvotes', 'pinned']
+		);
+		topicData = topicData.filter(t => t && t.cid);
+		topicData.forEach((t) => {
+			t.votes = parseInt(t.upvotes || 0, 10) - parseInt(t.downvotes || 0, 10);
+		});
+
+		const promises = [
+			db.sortedSetAddBulk(topicData.map(t => ([`topic:votes`, t.votes, t.tid]))),
+			db.deleteObjectFields(tids.map(tid => `topic:${tid}`), ['totalVoteCount']),
+		];
+		const nonPinned = topicData.filter(t => t && !t.pinned);
+		if (nonPinned.length) {
+			promises.push(
+				db.sortedSetAddBulk(nonPinned.map(t => ([`cid:${t.cid}:tids:votes`, t.votes, t.tid])))
+			);
+		}
+
+		await Promise.all(promises);
+	}, {
+		batch: 500,
+	});
+};
 
