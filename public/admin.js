@@ -2,7 +2,7 @@
 
 /* globals define, $, socket */
 
-define('admin/plugins/total-vote-count', ['alerts'], function (alerts) {
+define('admin/plugins/total-vote-count', ['alerts'], (alerts) => {
 	const ACP = {};
 
 	ACP.init = function () {
