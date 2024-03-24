@@ -19,11 +19,14 @@
 /* globals describe, it, before, afterEach */
 
 const assert = require('assert');
+const util = require('util');
 
 const topics = require.main.require('./src/topics');
 const posts = require.main.require('./src/posts');
 const categories = require.main.require('./src/categories');
 const user = require.main.require('./src/user');
+
+const sleep = util.promisify(setTimeout);
 
 describe('nodebb-plugin-total-vote-count', () => {
 	let authorUid;
@@ -67,10 +70,12 @@ describe('nodebb-plugin-total-vote-count', () => {
 
 	it('should equal initial post votes if no other posts are upvoted', async () => {
 		await posts.upvote(postData.pid, commenterUid);
+		await sleep(1000);
 		let [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 1);
 
 		await posts.downvote(postData.pid, commenterUid);
+		await sleep(1000);
 		[topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, -1);
 		await posts.unvote(postData.pid, commenterUid);
@@ -78,10 +83,12 @@ describe('nodebb-plugin-total-vote-count', () => {
 
 	it('should consider response votes', async () => {
 		await posts.upvote(responseData.pid, authorUid);
+		await sleep(1000);
 		let [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 1);
 
 		await posts.downvote(responseData.pid, authorUid);
+		await sleep(1000);
 		[topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, -1);
 	});
@@ -89,6 +96,7 @@ describe('nodebb-plugin-total-vote-count', () => {
 	it('should consider both post and response votes', async () => {
 		await posts.upvote(postData.pid, commenterUid);
 		await posts.upvote(responseData.pid, authorUid);
+		await sleep(1000);
 		const [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 2);
 	});
@@ -96,6 +104,7 @@ describe('nodebb-plugin-total-vote-count', () => {
 	it('should allow post and response votes to cancel out', async () => {
 		await posts.upvote(postData.pid, commenterUid);
 		await posts.downvote(responseData.pid, authorUid);
+		await sleep(1000);
 		const [topic] = await topics.getTopicsByTids([topicData.tid]);
 		assert.strictEqual(topic.votes, 0);
 	});
