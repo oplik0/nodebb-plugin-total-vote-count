@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.3.0...v1.3.1) (2024-03-24)
+
+
+### Bug Fixes
+
+* dont calculate totalVoteCount on every page load ([#21](https://github.com/oplik0/nodebb-plugin-total-vote-count/issues/21)) ([ef969d2](https://github.com/oplik0/nodebb-plugin-total-vote-count/commit/ef969d2c5205798fd4b224a74fc9fa0d6f414ff0))
+
 ## [1.3.0](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.2.1...v1.3.0) (2024-03-20)
 
 
