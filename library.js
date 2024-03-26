@@ -39,6 +39,21 @@ plugin.getTopics = async (hookData) => {
 	return hookData;
 };
 
+plugin.filterTopicsSortOptions = async (hookData) => {
+	hookData.fields.push('totalVoteCount');
+	hookData.sortMap.votes = function (a, b) {
+		if (a.hasOwnProperty('totalVoteCount') && b.hasOwnProperty('totalVoteCount') &&
+			a.totalVoteCount !== b.totalVoteCount) {
+			return b.totalVoteCount - a.totalVoteCount;
+		}
+		if (a.votes !== b.votes) {
+			return b.votes - a.votes;
+		}
+		return b.postcount - a.postcount;
+	};
+	return hookData;
+};
+
 plugin.updatePostVoteCount = async (hookData) => {
 	const { tid } = hookData.post;
 	await recalculateTotalTopicVotes([tid]);
@@ -74,7 +89,7 @@ async function recalculateTotalTopicVotes(tids) {
 
 	for (const [index, topic] of Object.entries(topicData)) {
 		if (topic) {
-			topic.totalVoteCount = topic.votes;
+			topic.totalVoteCount = parseInt(topic.votes, 10) || 0;
 			for (const { score } of voteData[index]) {
 				topic.totalVoteCount += score;
 			}
@@ -82,7 +97,7 @@ async function recalculateTotalTopicVotes(tids) {
 	}
 
 	const promises = [
-		db.sortedSetAddBulk(topicData.map(t => (['topic:votes', t.totalVoteCount, t.tid]))),
+		db.sortedSetAddBulk(topicData.map(t => (['topics:votes', t.totalVoteCount, t.tid]))),
 		db.setObjectBulk(topicData.map(t => ([`topic:${t.tid}`, { totalVoteCount: t.totalVoteCount }]))),
 	];
 	const nonPinned = topicData.filter(t => t && !t.pinned);
@@ -111,7 +126,7 @@ socketAdmin.plugins.totalVotes.revert = async (/* socket */) => {
 		});
 
 		const promises = [
-			db.sortedSetAddBulk(topicData.map(t => ([`topic:votes`, t.votes, t.tid]))),
+			db.sortedSetAddBulk(topicData.map(t => ([`topics:votes`, t.votes, t.tid]))),
 			db.deleteObjectFields(tids.map(tid => `topic:${tid}`), ['totalVoteCount']),
 		];
 		const nonPinned = topicData.filter(t => t && !t.pinned);

@@ -6,6 +6,7 @@
 		{ "hook": "static:app.load", "method": "init" },
 		{ "hook": "filter:admin.header.build", "method": "addAdminNavigation" },
 		{ "hook": "filter:topics.get", "method": "getTopics" },
+		{ "hook": "filter:topics.sortOptions", "method": "filterTopicsSortOptions" },
 		{ "hook": "action:post.updatePostVoteCount", "method": "updatePostVoteCount" },
 		{ "hook": "action:post.move", "method": "actionPostMove" },
 		{ "hook": "action:post.delete", "method": "actionPostDelete" },
