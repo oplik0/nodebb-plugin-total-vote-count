@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.3.1...v1.4.0) (2024-03-27)
+
+
+### Code Refactoring
+
+* remove lodash dependency ([25cc3d8](https://github.com/oplik0/nodebb-plugin-total-vote-count/commit/25cc3d8700536ad745bb8cdcd3e7c1a1365519f8))
+
 ## [1.3.1](https://github.com/oplik0/nodebb-plugin-total-vote-count/compare/v1.3.0...v1.3.1) (2024-03-24)
 
 
