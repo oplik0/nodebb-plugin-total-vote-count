@@ -1,7 +1,5 @@
 'use strict';
 
-const _ = require.main.require('lodash');
-
 const db = require.main.require('./src/database');
 const topics = require.main.require('./src/topics');
 const batch = require.main.require('./src/batch');
@@ -72,7 +70,7 @@ plugin.actionPostRestore = async (hookData) => {
 };
 
 plugin.actionPostsPurge = async (hookData) => {
-	const tids = _.uniq(hookData.posts.map(p => p && p.tid));
+	const tids = [...new Set(hookData.posts.map(p => p && p.tid))];
 	await recalculateTotalTopicVotes(tids);
 };
 
